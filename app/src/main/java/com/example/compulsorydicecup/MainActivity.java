@@ -1,19 +1,23 @@
 package com.example.compulsorydicecup;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     int kurwa = 0;
     NumberPicker num;
 
+    Button butt3;
+    ArrayList<int[]> diceSets = new ArrayList<>();
 
     private View.OnClickListener mCorkyListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -48,8 +54,23 @@ public class MainActivity extends AppCompatActivity {
         num.setMinValue(0);
         num.setMaxValue(6);
         butt2.setOnClickListener(mCorkyListener);
+
+        butt3 = new Button(this);
+        constLayout.addView(butt3);
+        butt3.setText("Rolled dice sets");
+        butt3.setOnClickListener(openDiceSetsActivity);
     }
 
+    private View.OnClickListener openDiceSetsActivity = new View.OnClickListener() {
+        public void onClick(View v) {
+            Intent i = new Intent(MainActivity.this, DiceSetsActivity.class);
+            i.putExtra("diceSetsSize", diceSets.size());
+            for (int j = 0; j < diceSets.size(); j++) {
+                i.putExtra("diceSets" + j, diceSets.get(j));
+            }
+            MainActivity.this.startActivity(i);
+        }
+    };
 
     public View.OnClickListener kutaz() {
         dick();
@@ -59,9 +80,18 @@ public class MainActivity extends AppCompatActivity {
     private void dick() {
         kurwa = Integer.parseInt("" +num.getValue());
         constLayout2.removeAllViews();
+
+        int[] ds = new int[6];
+
         for(int i=0; i<kurwa; i++) {
-            drawDie(rand.nextInt(6)+1, constLayout2);
+
+            int r = rand.nextInt(6) + 1;
+            ds[i] = r;
+
+            drawDie(r, constLayout2);
         }
+
+        diceSets.add(ds);
     }
 
     private void drawDie(int die, ViewGroup view) {
