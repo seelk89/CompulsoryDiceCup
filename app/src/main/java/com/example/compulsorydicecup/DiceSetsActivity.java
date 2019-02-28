@@ -1,5 +1,7 @@
 package com.example.compulsorydicecup;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -22,8 +24,6 @@ public class DiceSetsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dice_sets);
         constLayout = (ViewGroup) findViewById(R.id.linearLayout1);
-        constLayout2 = new LinearLayout(this);
-        constLayout.addView(constLayout2);
         butt = new Button(this);
         constLayout.addView(butt);
         butt.setText("Clear");
@@ -36,6 +36,11 @@ public class DiceSetsActivity extends AppCompatActivity {
             diceSets.add(getIntent().getIntegerArrayListExtra("diceSets" + i));
         }
         for (int i = 0; i < diceSets.size(); i++) {
+            constLayout2 = new LinearLayout(this);
+            if (i % 2 == 0) {
+                constLayout2.setBackgroundColor(Color.parseColor("#FA0FA0"));
+            }
+            constLayout.addView(constLayout2);
             ArrayList<Integer> ds = diceSets.get(i);
             for (int j = 0; j < ds.size(); j++) {
                 drawDie(ds.get(j), constLayout2);
@@ -45,7 +50,10 @@ public class DiceSetsActivity extends AppCompatActivity {
 
     private View.OnClickListener clearLayout2 = new View.OnClickListener() {
         public void onClick(View v) {
-            constLayout2.removeAllViews();
+            constLayout.removeViews(1, constLayout.getChildCount() - 1);
+            Intent intent=new Intent();
+            setResult(1, intent);
+            finish();
         }
     };
 

@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             for (int j = 0; j < diceSets.size(); j++) {
                 i.putExtra("diceSets" + j, diceSets.get(j));
             }
-            MainActivity.this.startActivity(i);
+            MainActivity.this.startActivityForResult(i, 1);
         }
     };
 
@@ -100,4 +100,13 @@ public class MainActivity extends AppCompatActivity {
         TextView txt = new TextView(this);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1)
+        {
+            diceSets.clear();
+        }
+    }
 }
