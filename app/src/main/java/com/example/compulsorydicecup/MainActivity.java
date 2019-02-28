@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     NumberPicker num;
 
     Button butt3;
-    ArrayList<int[]> diceSets = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> diceSets = new ArrayList<>();
 
     private View.OnClickListener mCorkyListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -81,12 +81,12 @@ public class MainActivity extends AppCompatActivity {
         kurwa = Integer.parseInt("" +num.getValue());
         constLayout2.removeAllViews();
 
-        int[] ds = new int[6];
+        ArrayList<Integer> ds = new ArrayList<>();
 
         for(int i=0; i<kurwa; i++) {
 
             int r = rand.nextInt(6) + 1;
-            ds[i] = r;
+            ds.add(r);
 
             drawDie(r, constLayout2);
         }
