@@ -1,40 +1,40 @@
 package com.example.compulsorydicecup;
 
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import java.io.Console;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button butt2;
-    ViewGroup constLayout;
-    ViewGroup constLayout2;
+    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    Button butt;
+    ViewGroup mainLayout;
+    ViewGroup dieLayout;
     Random rand = new Random();
-    int kurwa = 0;
+    int dieNumber = 0;
     NumberPicker num;
+    ArrayList<Integer> savedDice;
+    ArrayList<String> rollDate;
 
     Button butt3;
     ArrayList<ArrayList<Integer>> diceSets = new ArrayList<>();
 
-    private View.OnClickListener mCorkyListener = new View.OnClickListener() {
+    private View.OnClickListener rollDieListener = new View.OnClickListener() {
         public void onClick(View v) {
-            dick();
+            rollDice();
         }
     };
 
@@ -43,28 +43,50 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        constLayout2 = new LinearLayout(this);
-        constLayout = (ViewGroup) findViewById(R.id.layBItch);
+        savedDice = new ArrayList<>();
+        rollDate =  new ArrayList<>();
+        dieLayout = new LinearLayout(this);
+        mainLayout = (ViewGroup) findViewById(R.id.mainLayout);
         num = new NumberPicker(this);
-        constLayout.addView(constLayout2);
-        butt2 = new Button(this);
-        butt2.setText("Roll the D");
-        constLayout.addView(butt2);
-        constLayout.addView(num);
+        butt = new Button(this);
+
+        mainLayout.addView(dieLayout);
+        mainLayout.addView(butt);
+        mainLayout.addView(num);
+
+        butt.setText("Roll the D");
         num.setMinValue(0);
         num.setMaxValue(6);
-        butt2.setOnClickListener(mCorkyListener);
+        butt.setOnClickListener(rollDieListener);
 
         butt3 = new Button(this);
-        constLayout.addView(butt3);
+        mainLayout.addView(butt3);
         butt3.setText("Rolled dice sets");
         butt3.setOnClickListener(openDiceSetsActivity);
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putIntegerArrayList("savedDice", savedDice);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        savedDice = savedInstanceState.getIntegerArrayList("savedDice");
+
+        checkForSavedData();
     }
 
     private View.OnClickListener openDiceSetsActivity = new View.OnClickListener() {
         public void onClick(View v) {
             Intent i = new Intent(MainActivity.this, DiceSetsActivity.class);
             i.putExtra("diceSetsSize", diceSets.size());
+            i.putStringArrayListExtra("rollDate", rollDate);
             for (int j = 0; j < diceSets.size(); j++) {
                 i.putExtra("diceSets" + j, diceSets.get(j));
             }
@@ -72,32 +94,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public View.OnClickListener kutaz() {
-        dick();
-        return null;
-    }
 
-    private void dick() {
-        kurwa = Integer.parseInt("" +num.getValue());
-        constLayout2.removeAllViews();
+    private void rollDice() {
+        dieNumber = Integer.parseInt("" +num.getValue());
+        dieLayout.removeAllViews();
 
-        ArrayList<Integer> ds = new ArrayList<>();
-
-        for(int i=0; i<kurwa; i++) {
-
-            int r = rand.nextInt(6) + 1;
-            ds.add(r);
-
-            drawDie(r, constLayout2);
+        ArrayList<Integer> dr = new ArrayList<>();
+        savedDice.clear();
+        rollDate.add(format.format(new Date()));
+        for(int i=0; i<dieNumber; i++) {
+            int roll = rand.nextInt(6) + 1;
+            savedDice.add(roll);
+            dr.add(roll);
+            drawDie(roll, dieLayout);
         }
-
-        diceSets.add(ds);
+        diceSets.add(dr);
     }
 
     private void drawDie(int die, ViewGroup view) {
         View draw = new DrawView(this, die);
         view.addView(draw, 100, 100);
-        TextView txt = new TextView(this);
+       // TextView txt = new TextView(this);
     }
 
     @Override
@@ -107,6 +124,19 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == 1)
         {
             diceSets.clear();
+        }
+    }
+
+    private void checkForSavedData() {
+        if(savedDice.size() > 0 ) {
+            drawSavedDice();
+        }
+    }
+
+    private void drawSavedDice() {
+
+        for(int dieNumber : savedDice) {
+            drawDie(dieNumber, dieLayout);
         }
     }
 }

@@ -8,11 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class DiceSetsActivity extends AppCompatActivity {
 
+    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    ArrayList<String> diceDate = new ArrayList<>();
     ViewGroup constLayout;
     ViewGroup constLayout2;
     Button butt;
@@ -32,19 +38,21 @@ public class DiceSetsActivity extends AppCompatActivity {
     }
 
     private void drawDiceSets() {
+        diceDate = getIntent().getStringArrayListExtra("rollDate");
         for (int i = 0; i < getIntent().getIntExtra("diceSetsSize", 0); i++) {
             diceSets.add(getIntent().getIntegerArrayListExtra("diceSets" + i));
         }
         for (int i = 0; i < diceSets.size(); i++) {
             constLayout2 = new LinearLayout(this);
-            if (i % 2 == 0) {
-                constLayout2.setBackgroundColor(Color.parseColor("#FA0FA0"));
-            }
             constLayout.addView(constLayout2);
             ArrayList<Integer> ds = diceSets.get(i);
             for (int j = 0; j < ds.size(); j++) {
                 drawDie(ds.get(j), constLayout2);
+
             }
+            TextView rollDate = new TextView(this);
+            constLayout2.addView(rollDate);
+            rollDate.setText(diceDate.get(i));
         }
     }
 
