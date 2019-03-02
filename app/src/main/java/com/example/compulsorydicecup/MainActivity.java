@@ -71,6 +71,13 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
 
         savedInstanceState.putIntegerArrayList("savedDice", savedDice);
+        savedInstanceState.putStringArrayList("rollDate", rollDate);
+        savedInstanceState.putInt("numValue",num.getValue());
+
+        for (int i=0; i<diceSets.size(); i++) {
+            savedInstanceState.putIntegerArrayList("diceSets" + i, diceSets.get(i));
+        }
+        savedInstanceState.putInt("diceSetsSize",diceSets.size());
     }
 
     @Override
@@ -78,7 +85,12 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
         savedDice = savedInstanceState.getIntegerArrayList("savedDice");
+        rollDate = savedInstanceState.getStringArrayList("rollDate");
+        num.setValue(savedInstanceState.getInt("numValue"));
 
+        for (int i =0; i< savedInstanceState.getInt("diceSetsSize");i++) {
+            diceSets.add(savedInstanceState.getIntegerArrayList("diceSets" + i));
+        }
         checkForSavedData();
     }
 
@@ -93,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivityForResult(i, 1);
         }
     };
-
 
     private void rollDice() {
         dieNumber = Integer.parseInt("" +num.getValue());
