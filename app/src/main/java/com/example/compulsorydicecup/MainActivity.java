@@ -1,9 +1,11 @@
 package com.example.compulsorydicecup;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     NumberPicker num;
     ArrayList<Integer> savedDice;
     ArrayList<String> rollDate;
+    float x1,x2;
 
-    Button butt3;
     ArrayList<ArrayList<Integer>> diceSets = new ArrayList<>();
 
     private View.OnClickListener rollDieListener = new View.OnClickListener() {
@@ -41,30 +43,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+            setContentView(R.layout.activity_main);
 
-        savedDice = new ArrayList<>();
-        rollDate =  new ArrayList<>();
-        dieLayout = new LinearLayout(this);
-        mainLayout = (ViewGroup) findViewById(R.id.mainLayout);
-        num = new NumberPicker(this);
-        butt = new Button(this);
+            savedDice = new ArrayList<>();
+            rollDate = new ArrayList<>();
+            dieLayout = new LinearLayout(this);
+            mainLayout = (ViewGroup) findViewById(R.id.mainLayout);
+            num = new NumberPicker(this);
+            butt = new Button(this);
 
-        mainLayout.addView(dieLayout);
-        mainLayout.addView(butt);
-        mainLayout.addView(num);
+            mainLayout.addView(dieLayout);
+            mainLayout.addView(butt);
+            mainLayout.addView(num);
 
-        butt.setText("Roll the D");
-        num.setMinValue(0);
-        num.setMaxValue(6);
-        butt.setOnClickListener(rollDieListener);
+            butt.setText("Roll the D");
+            num.setMinValue(0);
+            num.setMaxValue(6);
+            butt.setOnClickListener(rollDieListener);
+        }
 
-        butt3 = new Button(this);
-        mainLayout.addView(butt3);
-        butt3.setText("Rolled dice sets");
-        butt3.setOnClickListener(openDiceSetsActivity);
-
-    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -94,18 +91,6 @@ public class MainActivity extends AppCompatActivity {
         checkForSavedData();
     }
 
-    private View.OnClickListener openDiceSetsActivity = new View.OnClickListener() {
-        public void onClick(View v) {
-            Intent i = new Intent(MainActivity.this, DiceSetsActivity.class);
-            i.putExtra("diceSetsSize", diceSets.size());
-            i.putStringArrayListExtra("rollDate", rollDate);
-            for (int j = 0; j < diceSets.size(); j++) {
-                i.putExtra("diceSets" + j, diceSets.get(j));
-            }
-            MainActivity.this.startActivityForResult(i, 1);
-        }
-    };
-
     private void rollDice() {
         dieNumber = Integer.parseInt("" +num.getValue());
         dieLayout.removeAllViews();
@@ -125,14 +110,14 @@ public class MainActivity extends AppCompatActivity {
     private void drawDie(int die, ViewGroup view) {
         View draw = new DrawView(this, die);
         view.addView(draw, 100, 100);
-       // TextView txt = new TextView(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1)
+
+        if (resultCode == Activity.RESULT_OK)
         {
             diceSets.clear();
         }
@@ -149,5 +134,27 @@ public class MainActivity extends AppCompatActivity {
         for(int dieNumber : savedDice) {
             drawDie(dieNumber, dieLayout);
         }
+    }
+
+    public boolean onTouchEvent(MotionEvent touchEvent) {
+        switch (touchEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = touchEvent.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = touchEvent.getX();
+
+                if( x2 < x1 - 100) {
+                    Intent i = new Intent(MainActivity.this, DiceSetsActivity.class);
+                    i.putExtra("diceSetsSize", diceSets.size());
+                    i.putStringArrayListExtra("rollDate", rollDate);
+                    for (int j = 0; j < diceSets.size(); j++) {
+                        i.putExtra("diceSets" + j, diceSets.get(j));
+                    }
+                    MainActivity.this.startActivityForResult(i, 1);
+                }
+                break;
+        }
+        return  false;
     }
 }
